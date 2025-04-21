@@ -30,24 +30,8 @@ jobs:
     needs: build-job
 
     steps:
-      - name: stop backend
-        run: |
-          cd backend
-          docker stop antest-appb || true
-
-      - name: remove backend
-        run: docker rm antest-appb || true
-
       - name: deploy backend
         run: docker run -d --name antest-appb -p 80:5000 antest-app:latest
-      
-      - name: stop front
-        run: |
-          cd frontend
-          docker stop Aantest-appf || true
-
-      - name: remove frontend
-        run: docker rm antest-appf || true
 
       - name: deploy frontend
         run: docker run -d --name antest-appbf -p 80:5000 antest-app:latest
