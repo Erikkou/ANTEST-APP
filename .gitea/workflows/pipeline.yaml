@@ -1,0 +1,53 @@
+name: Pipeline for ANTEST-APP
+on: [push]
+
+jobs:
+  build-job:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name:
+        run: git clone http://10.24.11.90:3000/admin/ANTEST-APP.git .
+      
+      - name: Install back
+        run: |
+          cd backend
+          npm install
+      - name: Install front
+        run: |
+          cd frontend
+          npm install
+      - name: Build Docker image for backend
+        run: |
+          docker build -t antest-app-backend:latest ./backend
+
+      - name: Build Docker image for frontend
+        run: |
+          docker build -t antest-app-frontend:latest ./frontend
+
+  deploy-job:
+    runs-on: ubuntu-latest
+    needs: build-job
+
+    steps:
+      - name: stop backend
+        run: |
+          cd backend
+          docker stop antest-appb || true
+
+      - name: remove backend
+        run: docker rm antest-appb || true
+
+      - name: deploy backend
+        run: docker run -d --name antest-appb -p 80:5000 antest-app:latest
+      
+      - name: stop front
+        run: |
+          cd frontend
+          docker stop Aantest-appf || true
+
+      - name: remove frontend
+        run: docker rm antest-appf || true
+
+      - name: deploy frontend
+        run: docker run -d --name antest-appbf -p 80:5000 antest-app:latest
